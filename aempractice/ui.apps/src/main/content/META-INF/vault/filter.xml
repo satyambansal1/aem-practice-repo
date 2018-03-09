@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/apps/aempractice"/>
+
+
+    <filter root="/conf/aempractice" mode="merge"/>
+
+
+    <filter root="/etc/clientlibs/aempractice"/>
+
+
+    <filter root="/etc/designs/aempractice">
+        <include pattern="/etc/designs/aempractice/jcr:content"/>
+
+    </filter>
+
+</workspaceFilter>
