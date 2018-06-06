@@ -18,10 +18,19 @@ package com.aem.practice.core.models;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jcr.AccessDeniedException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.UnsupportedRepositoryOperationException;
 
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.jackrabbit.api.security.user.User;
+import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.settings.SlingSettingsService;
 
 @Model(adaptables=Resource.class)
@@ -34,12 +43,17 @@ public class HelloWorldModel {
     protected String resourceType;
 
     private String message;
+    
+    @SlingObject
+    private ResourceResolver resourceResolver;
 
     @PostConstruct
-    protected void init() {
-        message = "\tHello World!\n";
-        message += "\tThis is instance: " + settings.getSlingId() + "\n";
-        message += "\tResource type is: " + resourceType + "\n";
+    protected void init() throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+    	Session session = resourceResolver.adaptTo(Session.class);
+    	final UserManager userManager = ((JackrabbitSession) session).getUserManager(); 
+    	User user = (User) userManager.getAuthorizable(session.getUserID());
+        message = "\tHello ";
+        message += user.getProperty("./profile/familyName") != null ? user.getProperty("./profile/familyName")[0].toString() : null;
     }
 
     public String getMessage() {
